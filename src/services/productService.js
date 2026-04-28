@@ -147,7 +147,7 @@ export const mockOrders = [
 ];
 
 // Mock Product Service with data
-import { productAPI, userAPI } from './api';
+import apiClient, { productAPI, userAPI } from './api';
 
 export const productService = {
   getUsers: async () => {
@@ -195,10 +195,8 @@ export const productService = {
     }
 
     try {
-      // Assuming backend has /products/{id}
-      const response = await fetch(`http://localhost:8080/api/products/${id}`);
-      if (!response.ok) throw new Error('Failed to fetch product');
-      const product = await response.json();
+      const response = await apiClient.get(`/products/${id}`);
+      const product = response.data;
       return enrichProduct(product);
     } catch (error) {
       console.warn('Fetch product API failed, using mock:', error);
@@ -233,10 +231,8 @@ export const productService = {
 
   getCategories: async () => {
     try {
-      // Assuming backend has /categories
-      const res = await fetch('http://localhost:8080/api/categories');
-      if (!res.ok) throw new Error('Failed to fetch categories');
-      const categories = await res.json();
+      const res = await apiClient.get('/categories');
+      const categories = res.data;
       return Array.isArray(categories) && categories.length > 0 ? categories : mockCategories;
     } catch (error) {
       console.warn('Fetch categories API failed, using mock:', error);
@@ -260,24 +256,16 @@ export const productService = {
     };
 
     try {
-      const res = await fetch('http://localhost:8080/api/products', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          name: localPayload.name,
-          category: localPayload.category,
-          description: localPayload.description,
-          price: localPayload.price,
-        })
+      const created = await apiClient.post('/products', {
+        name: localPayload.name,
+        category: localPayload.category,
+        description: localPayload.description,
+        price: localPayload.price,
       });
-      if (!res.ok) throw new Error('Failed to add product');
-      const created = await res.json();
 
       const productWithServerId = {
         ...localPayload,
-        id: Number(created?.id) || localPayload.id,
+        id: Number(created?.data?.id) || localPayload.id,
       };
 
       const updatedProducts = [productWithServerId, ...localProducts];
@@ -293,15 +281,8 @@ export const productService = {
 
   updateProduct: async (id, updates) => {
     try {
-      const res = await fetch(`http://localhost:8080/api/products/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(updates)
-      });
-      if (!res.ok) throw new Error('Failed to update product');
-      return res.json();
+      const res = await apiClient.put(`/products/${id}`, updates);
+      return res.data;
     } catch (error) {
       console.warn('Update product API failed, using mock:', error);
       const index = mockProducts.findIndex(p => p.id === id);
@@ -319,18 +300,7 @@ export const productService = {
     saveLocalProducts(updatedLocalProducts);
 
     try {
-      const res = await fetch(`http://localhost:8080/api/products/${id}`, {
-        method: 'DELETE'
-      });
-      if (!res.ok) {
-        // Fallback to mock
-        const index = mockProducts.findIndex(p => p.id === id);
-        if (index !== -1) {
-          mockProducts.splice(index, 1);
-          return true;
-        }
-        throw new Error('Failed to delete product');
-      }
+      await apiClient.delete(`/products/${id}`);
       return true;
     } catch (error) {
       console.warn('Delete product API failed, using mock:', error);

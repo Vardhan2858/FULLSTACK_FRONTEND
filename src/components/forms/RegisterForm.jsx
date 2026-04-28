@@ -94,11 +94,12 @@ export default function RegisterForm() {
       const trimmedEmail = formData.email.trim();
       const role = (formData.role || 'BUYER').toUpperCase();
 
-      // Build exact request body for backend
+      // Build exact request body for backend (include confirmPassword)
       const payload = {
         name: trimmedName,
         email: trimmedEmail,
         password: formData.password,
+        confirmPassword: formData.confirmPassword,
         role,
       };
 

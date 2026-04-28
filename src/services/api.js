@@ -1,9 +1,10 @@
 import axios from 'axios';
 
-// Configure Axios instance with base URL
-// Points to Spring Boot backend running on localhost:8080
+const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+
+// Configure Axios instance with a deployable base URL.
 const apiClient = axios.create({
-  baseURL: 'http://localhost:8080/api',
+  baseURL: apiBaseUrl,
   headers: {
     'Content-Type': 'application/json',
   },
