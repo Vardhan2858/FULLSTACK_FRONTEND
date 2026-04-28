@@ -1,0 +1,49 @@
+.feedback-form {
+  max-width: 760px;
+  width: 100%;
+}
+
+.feedback-intro {
+  margin: 0 0 1.5rem;
+  color: #d4d4d4;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.feedback-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.feedback-form textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d4af37;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+  background: #2a3542;
+  color: #f5f5f5;
+  resize: vertical;
+}
+
+.feedback-form textarea:focus {
+  outline: none;
+  border-color: #f4c430;
+  box-shadow: 0 0 0 3px rgba(244, 196, 48, 0.2);
+}
+
+.feedback-form textarea:disabled {
+  background: #3d4f5e;
+  cursor: not-allowed;
+  border-color: #555;
+}
+
+@media (max-width: 768px) {
+  .feedback-grid {
+    grid-template-columns: 1fr;
+  }
+}
